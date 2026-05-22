@@ -59,24 +59,29 @@ body {
 /* ── Table oval ───────────────────────────────────────────── */
 #table {
   width: min(90vw, 1100px);
-  height: min(82vh, 620px);
+  height: min(68vh, 480px);
   border: 8px solid var(--color-felt-border);
   border-radius: 50%;
   position: relative;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
   background: var(--color-felt);
   box-shadow: inset 0 0 60px rgba(0,0,0,0.3), 0 0 0 12px var(--color-felt-accent), 0 0 0 16px var(--color-felt-border), 0 8px 32px rgba(0,0,0,0.6);
+  flex-shrink: 0;
+}
+
+/* ── Game field (fills table oval, 3-zone column layout) ─── */
+#game-field {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  justify-content: space-between; align-items: center;
+  padding: 14px 0 14px;
 }
 
 /* ── Player areas ─────────────────────────────────────────── */
 #ai-area {
-  position: absolute; top: 18px;
-  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
 }
 #player-area {
-  position: absolute; bottom: 18px;
-  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
 }
 .player-name {
   font-family: var(--font-display);
@@ -88,7 +93,7 @@ body {
   font-size: 18px; font-weight: bold;
   color: var(--color-chip-primary);
 }
-.player-cards { display: flex; gap: 6px; min-height: 80px; align-items: center; }
+.player-cards { display: flex; gap: 6px; min-height: 60px; align-items: center; }
 .player-bet {
   font-size: 13px; color: var(--color-chip-primary);
   min-height: 18px;
@@ -103,9 +108,11 @@ body {
 
 /* ── Community cards & pot ────────────────────────────────── */
 #community-area {
-  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px; position: relative;
 }
-#community-cards { display: flex; gap: 8px; min-height: 0; align-items: center; }
+#community-cards { display: flex; gap: 6px; min-height: 0; align-items: center; }
 #pot-display {
   font-size: 16px; color: var(--color-chip-primary);
   font-weight: bold;
@@ -114,15 +121,15 @@ body {
 
 /* ── Cards ────────────────────────────────────────────────── */
 .card {
-  width: 64px; height: 96px;
+  width: 50px; height: 74px;
   background: var(--color-card-bg);
   border: 1.5px solid var(--color-card-border);
   border-radius: var(--radius-card);
   display: flex; flex-direction: column;
   align-items: center; justify-content: space-between;
-  padding: 5px;
+  padding: 4px;
   font-family: var(--font-display);
-  font-weight: bold; font-size: 18px;
+  font-weight: bold; font-size: 14px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.4);
   position: relative;
   transform-origin: center bottom;
@@ -131,9 +138,9 @@ body {
 }
 .card.red { color: var(--color-card-red); }
 .card.black { color: var(--color-card-black); }
-.card .rank-top { position: absolute; top: 4px; left: 7px; font-size: 16px; line-height: 1; }
-.card .suit-center { font-size: 28px; line-height: 1; }
-.card .rank-bot { position: absolute; bottom: 4px; right: 7px; font-size: 16px; line-height: 1; transform: rotate(180deg); }
+.card .rank-top { position: absolute; top: 3px; left: 5px; font-size: 12px; line-height: 1; }
+.card .suit-center { font-size: 22px; line-height: 1; }
+.card .rank-bot { position: absolute; bottom: 3px; right: 5px; font-size: 12px; line-height: 1; transform: rotate(180deg); }
 .card.face-down {
   background: linear-gradient(135deg, #2255aa 25%, #1a3d7a 75%);
   border-color: #1a3d7a;
@@ -157,10 +164,10 @@ body {
 
 /* ── Action buttons ───────────────────────────────────────── */
 #action-bar {
-  position: absolute; bottom: -80px;
-  display: flex; flex-direction: column; gap: 6px; align-items: center;
+  display: flex; flex-direction: column; gap: 5px; align-items: center;
+  margin-top: 6px; flex-shrink: 0;
 }
-#action-bar.hidden { display: none; }
+#action-bar.hidden { visibility: hidden; pointer-events: none; }
 #action-row-1 { display: flex; gap: 10px; align-items: center; }
 #raise-row    { display: flex; gap: 5px; align-items: center; flex-wrap: nowrap; }
 .action-btn {
@@ -218,17 +225,15 @@ body {
 
 /* ── Status / hint ────────────────────────────────────────── */
 #status-bar {
-  position: absolute; top: -44px;
-  font-size: 13px; color: var(--color-text-muted);
-  text-align: center; min-height: 20px; white-space: nowrap;
+  font-size: 12px; color: var(--color-text-muted);
+  text-align: center; min-height: 18px; white-space: nowrap;
 }
 #hint-box {
-  position: absolute; bottom: -110px;
   background: rgba(0,0,0,0.6);
   border: 1px solid var(--color-panel-border);
-  border-radius: 8px; padding: 8px 14px;
-  font-size: 13px; color: var(--color-text-primary);
-  max-width: 360px; text-align: center;
+  border-radius: 8px; padding: 6px 14px;
+  font-size: 12px; color: var(--color-text-primary);
+  max-width: 400px; text-align: center;
   display: none;
 }
 #hint-box.visible { display: block; }
@@ -377,47 +382,33 @@ body {
 
   <!-- Table -->
   <div id="table">
-    <!-- AI area -->
-    <div id="ai-area">
-      <div class="player-name">CPU <span id="ai-dealer-btn" class="dealer-btn" style="display:none">D</span></div>
-      <div id="ai-action-log"></div>
-      <div class="player-cards" id="ai-cards"></div>
-      <div class="player-stack">🪙 <span id="ai-stack">1000</span></div>
-      <div class="player-bet" id="ai-bet"></div>
-    </div>
-
-    <!-- Community / pot -->
-    <div id="community-area">
-      <div id="status-bar"></div>
-      <div id="pot-display">Pot: <span id="pot-amount">0</span></div>
-      <div id="community-cards"></div>
-      <div id="pot-chips"></div>
-      <div id="showdown-msg"></div>
-    </div>
-
-    <!-- Player area -->
-    <div id="player-area">
-      <div class="player-cards" id="player-cards"></div>
-      <div class="player-stack">🪙 <span id="player-stack">1000</span></div>
-      <div class="player-bet" id="player-bet"></div>
-      <div class="player-name">You <span id="player-dealer-btn" class="dealer-btn" style="display:none">D</span></div>
-      <div id="action-bar" class="hidden">
-        <div id="action-row-1">
-          <button class="action-btn" id="btn-fold">Fold</button>
-          <button class="action-btn" id="btn-check" style="display:none">Check</button>
-          <button class="action-btn" id="btn-call">Call <span id="call-amount"></span></button>
-        </div>
-        <div id="raise-row">
-          <button class="bet-preset" data-pct="0.5">½ Pot</button>
-          <button class="bet-preset" data-pct="0.75">¾ Pot</button>
-          <button class="bet-preset" data-pct="1.0">Pot</button>
-          <button class="bet-preset" data-allin="true">All In</button>
-          <input type="number" id="raise-input" min="0" max="1000" value="100">
-          <input type="range" id="raise-slider" min="0" max="1000" value="100">
-          <button class="action-btn" id="btn-raise">Raise <span id="raise-amount-display">100</span></button>
-        </div>
+    <div id="game-field">
+      <!-- AI area -->
+      <div id="ai-area">
+        <div class="player-name">CPU <span id="ai-dealer-btn" class="dealer-btn" style="display:none">D</span></div>
+        <div id="ai-action-log"></div>
+        <div class="player-cards" id="ai-cards"></div>
+        <div class="player-stack">🪙 <span id="ai-stack">1000</span></div>
+        <div class="player-bet" id="ai-bet"></div>
       </div>
-    </div>
+
+      <!-- Community / pot -->
+      <div id="community-area">
+        <div id="status-bar"></div>
+        <div id="pot-display">Pot: <span id="pot-amount">0</span></div>
+        <div id="community-cards"></div>
+        <div id="pot-chips"></div>
+        <div id="showdown-msg"></div>
+      </div>
+
+      <!-- Player area -->
+      <div id="player-area">
+        <div class="player-cards" id="player-cards"></div>
+        <div class="player-stack">🪙 <span id="player-stack">1000</span></div>
+        <div class="player-bet" id="player-bet"></div>
+        <div class="player-name">You <span id="player-dealer-btn" class="dealer-btn" style="display:none">D</span></div>
+      </div>
+    </div><!-- end #game-field -->
 
     <!-- New game overlay -->
     <div id="new-game-overlay">
@@ -426,6 +417,24 @@ body {
       <button id="btn-new-game">Deal Cards</button>
     </div>
   </div><!-- end #table -->
+
+  <!-- Action bar (outside table so it never overlaps) -->
+  <div id="action-bar" class="hidden">
+    <div id="action-row-1">
+      <button class="action-btn" id="btn-fold">Fold</button>
+      <button class="action-btn" id="btn-check" style="display:none">Check</button>
+      <button class="action-btn" id="btn-call">Call <span id="call-amount"></span></button>
+    </div>
+    <div id="raise-row">
+      <button class="bet-preset" data-pct="0.5">½ Pot</button>
+      <button class="bet-preset" data-pct="0.75">¾ Pot</button>
+      <button class="bet-preset" data-pct="1.0">Pot</button>
+      <button class="bet-preset" data-allin="true">All In</button>
+      <input type="number" id="raise-input" min="0" max="1000" value="100">
+      <input type="range" id="raise-slider" min="0" max="1000" value="100">
+      <button class="action-btn" id="btn-raise">Raise <span id="raise-amount-display">100</span></button>
+    </div>
+  </div>
 
   <!-- Hint box -->
   <div id="hint-box"></div>
@@ -792,39 +801,31 @@ const UserManager = (() => {
 ═══════════════════════════════════════════════════════════════ */
 const AIEngine = (() => {
 
-  function _oddsScore(gameState, cfg) {
-    const { holeCards, communityCards } = gameState.ai;
+  function _calcEquity(gameState, cfg) {
+    const holeCards = gameState.ai.holeCards;
+    const communityCards = gameState.communityCards || [];
     if (!holeCards || holeCards.length < 2) return 0.5;
-    const eq = HandEvaluator.equity(holeCards, communityCards || [], cfg.ai.monteCarlo.simCount);
-    // compare to pot odds
-    const { pot, toCall } = gameState;
-    const potOdds = toCall > 0 ? toCall / (pot + toCall) : 0;
-    return Math.max(0, Math.min(1, eq - potOdds + 0.5));
+    return HandEvaluator.equity(holeCards, communityCards, cfg.ai.monteCarlo.simCount);
   }
 
-  function _patternScore(gameState, profile, cfg) {
+  function _patternAdjustment(profile, cfg) {
     const trust = Math.min(1, profile.handsPlayed / cfg.tracking.minHandsForPattern);
-    if (trust === 0) return 0.5;
-    let score = 0.5;
-    // loose opponent → loosen AI calling range
-    if (profile.vpip > 0.6) score += 0.08;
-    // aggressive opponent → tighten, look for traps
-    if (profile.aggressionFactor > 1.5) score -= 0.06;
-    // opponent folds to bluffs → raise score (AI can bluff more)
-    if (profile.foldToBluff > 0.6) score += 0.07;
-    // calling station → don't bluff
-    if (profile.showdownWinRate > 0.6) score -= 0.08;
-    return Math.max(0, Math.min(1, score * trust + 0.5 * (1 - trust)));
+    if (trust === 0) return 0;
+    let adj = 0;
+    if (profile.vpip > 0.6)             adj += 0.04;
+    if (profile.aggressionFactor > 1.5) adj -= 0.04;
+    if (profile.foldToBluff > 0.6)      adj += 0.04;
+    if (profile.showdownWinRate > 0.6)  adj -= 0.04;
+    return Math.max(-0.08, Math.min(0.08, adj * trust));
   }
 
-  function _bluffScore(gameState, profile, cfg) {
-    const street = gameState.street; // 'preflop','flop','turn','river'
+  function _shouldBluff(gameState, profile, cfg) {
+    const street = gameState.street;
     let baseRate = cfg.ai.bluff[street] || cfg.ai.bluff.preflop;
-    // adjust by pattern
-    if (profile.foldToBluff > 0.6)   baseRate *= 1.4;
+    if (profile.foldToBluff > 0.6)     baseRate *= 1.4;
     if (profile.showdownWinRate > 0.6) baseRate *= 0.5;
     baseRate = Math.max(0, Math.min(1, baseRate));
-    return Math.random() < baseRate ? 1.0 : 0.0;
+    return Math.random() < baseRate;
   }
 
   function _raiseAmount(gameState, finalScore, cfg) {
@@ -844,28 +845,36 @@ const AIEngine = (() => {
   }
 
   function decide(gameState, profile) {
-    const cfg = UserManager.getConfig();
-    const w = cfg.ai.weights;
-    // normalise weights
-    const total = w.equity + w.pattern + w.bluff || 1;
-    const w1 = w.equity / total, w2 = w.pattern / total, w3 = w.bluff / total;
+    const cfg    = UserManager.getConfig();
+    const equity = _calcEquity(gameState, cfg);
+    const adj    = _patternAdjustment(profile, cfg);
+    const bluffing = _shouldBluff(gameState, profile, cfg);
+    const toCall = gameState.toCall || 0;
+    const pot    = gameState.pot    || 0;
+    const potOdds = toCall > 0 ? toCall / (pot + toCall) : 0;
 
-    const oScore = _oddsScore(gameState, cfg);
-    const pScore = _patternScore(gameState, profile, cfg);
-    const bScore = _bluffScore(gameState, profile, cfg);
-    const final  = oScore * w1 + pScore * w2 + bScore * w3;
-
-    const { fold: foldT, raise: raiseT } = cfg.ai.thresholds;
     let decision;
-    if (final < foldT && gameState.toCall > 0) decision = { action: 'fold', amount: 0 };
-    else if (final >= raiseT) decision = { action: 'raise', amount: _raiseAmount(gameState, final, cfg) };
-    else if (gameState.toCall === 0) decision = { action: 'check', amount: 0 };
-    else decision = { action: 'call', amount: gameState.toCall };
+    if (toCall > 0) {
+      if (!bluffing && (equity + adj) < potOdds * 0.85) {
+        decision = { action: 'fold', amount: 0 };
+      } else if (bluffing && equity < 0.45) {
+        decision = { action: 'raise', amount: _raiseAmount(gameState, 0.5, cfg) };
+      } else if ((equity + adj) > potOdds * 1.4 || (bluffing && equity >= 0.45)) {
+        decision = { action: 'raise', amount: _raiseAmount(gameState, equity, cfg) };
+      } else {
+        decision = { action: 'call', amount: toCall };
+      }
+    } else {
+      if (bluffing || (equity + adj) >= 0.62) {
+        decision = { action: 'raise', amount: _raiseAmount(gameState, equity, cfg) };
+      } else {
+        decision = { action: 'check', amount: 0 };
+      }
+    }
 
     Logger.info('AI', `Decision: ${decision.action}${decision.amount ? ' ' + decision.amount : ''}`, {
-      street: gameState.street, oScore: +oScore.toFixed(3), pScore: +pScore.toFixed(3),
-      bScore: +bScore.toFixed(3), final: +final.toFixed(3),
-      toCall: gameState.toCall, pot: gameState.pot, handsPlayed: profile.handsPlayed
+      street: gameState.street, equity: +equity.toFixed(3), adj: +adj.toFixed(3),
+      bluffing, potOdds: +potOdds.toFixed(3), toCall, pot
     });
     return decision;
   }
