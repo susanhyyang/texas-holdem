@@ -126,6 +126,7 @@ body {
 }
 #community-cards { display: flex; gap: 6px; align-items: center; }
 #pot-display { font-size: 15px; font-weight: bold; color: var(--color-chip-primary); }
+#pot-contrib { font-size: 11px; color: var(--color-text-muted); text-align: center; min-height: 14px; }
 #pot-display {
   font-size: 16px; color: var(--color-chip-primary);
   font-weight: bold;
@@ -411,6 +412,7 @@ body {
       <!-- Community / pot -->
       <div id="community-area">
         <div id="pot-display">Pot: <span id="pot-amount">0</span></div>
+        <div id="pot-contrib"></div>
         <div id="community-cards"></div>
         <div id="pot-chips"></div>
         <div id="showdown-msg"></div>
@@ -992,10 +994,11 @@ class GameEngine {
     s.communityCards = [];
     s.pot = 0; s.toCall = 0; s.lastRaise = 0;
     s.player.bet = 0; s.ai.bet = 0;
+    s.playerTotalBet = 0; s.aiTotalBet = 0;
     s.handOver = false; s.winner = null; s.winReason = null;
     s.allIn = false; s.street = 'preflop'; s.aiActions = [];
-    s.acted = new Set(); // tracks who has acted in the current betting round
-    s.lastAiAction = null; // cleared each hand, set when AI acts
+    s.acted = new Set();
+    s.lastAiAction = null;
 
     this._deck.shuffle();
 
@@ -1029,6 +1032,8 @@ class GameEngine {
     s[who].stack -= actual;
     s[who].bet   += actual;
     s.pot        += actual;
+    if (who === 'player') s.playerTotalBet += actual;
+    else                  s.aiTotalBet     += actual;
   }
 
   playerAction(type, amount) {
@@ -1067,6 +1072,8 @@ class GameEngine {
       const callAmt = Math.min(s.toCall, s[who].stack);
       s[who].stack -= callAmt; s[who].bet += callAmt; s.pot += callAmt;
       s.toCall = 0;
+      if (who === 'player') s.playerTotalBet += callAmt;
+      else                  s.aiTotalBet     += callAmt;
     } else if (type === 'raise') {
       const callFirst = Math.min(s.toCall, s[who].stack);
       s[who].stack -= callFirst; s[who].bet += callFirst; s.pot += callFirst;
@@ -1075,6 +1082,8 @@ class GameEngine {
       s[who].stack -= raiseExtra; s[who].bet += raiseExtra; s.pot += raiseExtra;
       s.toCall = s[who].bet - s[opp].bet;
       s.lastRaise = raiseExtra;
+      if (who === 'player') s.playerTotalBet += callFirst + raiseExtra;
+      else                  s.aiTotalBet     += callFirst + raiseExtra;
       // a raise resets acted — opponent must act again
       s.acted = new Set([who]);
     }
@@ -1336,6 +1345,14 @@ const Renderer = (() => {
     const aiBetEl     = document.getElementById('ai-bet');
     if (playerBetEl) playerBetEl.textContent = player.bet > 0 ? `Bet: ${player.bet}` : '';
     if (aiBetEl)     aiBetEl.textContent     = ai.bet > 0 ? `Bet: ${ai.bet}` : '';
+
+    // Pot contribution breakdown (total across all streets)
+    const contribEl = document.getElementById('pot-contrib');
+    if (contribEl && pot > 0 && state.playerTotalBet !== undefined) {
+      contribEl.textContent = `You: ${state.playerTotalBet} · CPU: ${state.aiTotalBet}`;
+    } else if (contribEl) {
+      contribEl.textContent = '';
+    }
 
     // AI action log
     const aiLogEl = document.getElementById('ai-action-log');
