@@ -76,25 +76,24 @@ body {
   padding: 16px 0;
 }
 
-/* ── Player areas — horizontal rows ───────────────────────── */
+/* ── Player areas — cards centered, HUD floats to side ────── */
 #ai-area {
-  display: flex; flex-direction: row;
-  align-items: center; justify-content: center;
-  gap: 16px; padding: 0 40px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; width: 100%;
 }
 #player-area {
-  display: flex; flex-direction: row;
-  align-items: center; justify-content: center;
-  gap: 16px; padding: 0 40px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; width: 100%;
 }
 
-/* Info panel sits beside the cards */
+/* HUD panels — absolutely positioned so they don't shift the cards */
 .player-hud {
+  position: absolute;
   display: flex; flex-direction: column;
   gap: 2px; min-width: 90px;
 }
-#ai-area .player-hud   { align-items: flex-start; }
-#player-area .player-hud { align-items: flex-start; }
+#ai-area   .player-hud { left: 28px;  align-items: flex-start; }
+#player-area .player-hud { right: 28px; align-items: flex-start; }
 
 .player-name {
   font-family: var(--font-display);
