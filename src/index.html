@@ -59,7 +59,7 @@ body {
 /* ── Table oval ───────────────────────────────────────────── */
 #table {
   width: min(90vw, 1100px);
-  height: min(75vh, 580px);
+  height: min(82vh, 620px);
   border: 8px solid var(--color-felt-border);
   border-radius: 50%;
   position: relative;
@@ -71,12 +71,12 @@ body {
 
 /* ── Player areas ─────────────────────────────────────────── */
 #ai-area {
-  position: absolute; top: 24px;
-  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  position: absolute; top: 18px;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
 }
 #player-area {
-  position: absolute; bottom: 24px;
-  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  position: absolute; bottom: 18px;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
 }
 .player-name {
   font-family: var(--font-display);
@@ -105,7 +105,7 @@ body {
 #community-area {
   display: flex; flex-direction: column; align-items: center; gap: 10px;
 }
-#community-cards { display: flex; gap: 8px; min-height: 100px; align-items: center; }
+#community-cards { display: flex; gap: 8px; min-height: 0; align-items: center; }
 #pot-display {
   font-size: 16px; color: var(--color-chip-primary);
   font-weight: bold;
@@ -157,10 +157,12 @@ body {
 
 /* ── Action buttons ───────────────────────────────────────── */
 #action-bar {
-  position: absolute; bottom: -72px;
-  display: flex; gap: 10px; align-items: center;
+  position: absolute; bottom: -80px;
+  display: flex; flex-direction: column; gap: 6px; align-items: center;
 }
 #action-bar.hidden { display: none; }
+#action-row-1 { display: flex; gap: 10px; align-items: center; }
+#raise-row    { display: flex; gap: 5px; align-items: center; flex-wrap: nowrap; }
 .action-btn {
   padding: 10px 22px; border: none; border-radius: 8px;
   font-family: var(--font-body); font-size: 14px; font-weight: 600;
@@ -172,24 +174,53 @@ body {
 #btn-fold:hover { background: var(--color-action-fold-hover); }
 #btn-call   { background: var(--color-action-call); }
 #btn-call:hover { background: var(--color-action-call-hover); }
-#btn-raise  { background: var(--color-action-raise); }
+#btn-raise  { background: var(--color-action-raise); padding: 8px 16px; }
 #btn-raise:hover { background: var(--color-action-raise-hover); }
 #btn-check  { background: var(--color-action-call); }
 #btn-check:hover { background: var(--color-action-call-hover); }
-#raise-controls { display: flex; align-items: center; gap: 6px; }
 #raise-slider {
-  width: 120px; accent-color: var(--color-action-raise);
+  width: 80px; accent-color: var(--color-action-raise);
 }
 #raise-amount-display {
   font-size: 13px; color: var(--color-chip-primary);
-  min-width: 50px; text-align: right;
+  min-width: 30px; text-align: left;
+}
+#raise-input {
+  width: 58px; background: var(--color-input-bg);
+  border: 1px solid var(--color-input-border);
+  color: var(--color-chip-primary); border-radius: 5px;
+  padding: 4px 5px; font-size: 12px; font-weight: 700;
+  text-align: center;
+}
+.bet-preset {
+  padding: 4px 7px; border: 1px solid var(--color-panel-border);
+  border-radius: 6px; background: rgba(0,0,0,0.35);
+  color: var(--color-chip-primary); font-size: 11px;
+  font-weight: 700; cursor: pointer; transition: background 0.15s;
+  white-space: nowrap;
+}
+.bet-preset:hover { background: rgba(255,255,255,0.12); }
+.bet-preset:active { transform: scale(0.95); }
+
+/* ── AI action log ────────────────────────────────────────── */
+#ai-action-log {
+  font-size: 13px; font-weight: 700;
+  color: var(--color-chip-primary);
+  min-height: 18px; text-align: center;
+  letter-spacing: 0.3px;
+}
+
+/* ── Pot breakdown ────────────────────────────────────────── */
+#pot-breakdown {
+  font-size: 11px; color: var(--color-text-muted);
+  text-align: center; margin-top: 2px; min-height: 15px;
 }
 
 /* ── Status / hint ────────────────────────────────────────── */
 #status-bar {
-  position: absolute; top: -40px;
-  font-size: 14px; color: var(--color-text-muted);
-  text-align: center; min-height: 20px;
+  position: absolute; top: -44px;
+  font-size: 13px; color: var(--color-text-muted);
+  text-align: center; min-height: 20px; white-space: nowrap;
 }
 #hint-box {
   position: absolute; bottom: -110px;
@@ -340,6 +371,7 @@ body {
   <!-- Top bar -->
   <div id="top-bar">
     <button class="icon-btn" id="btn-hint-toggle" title="Toggle hints">💡</button>
+    <a class="icon-btn" href="?logs" title="View game logs" style="text-decoration:none;font-size:13px;padding:6px 9px">📋</a>
     <button class="icon-btn" id="btn-admin" title="Admin settings">⚙️</button>
   </div>
 
@@ -348,6 +380,7 @@ body {
     <!-- AI area -->
     <div id="ai-area">
       <div class="player-name">CPU <span id="ai-dealer-btn" class="dealer-btn" style="display:none">D</span></div>
+      <div id="ai-action-log"></div>
       <div class="player-cards" id="ai-cards"></div>
       <div class="player-stack">🪙 <span id="ai-stack">1000</span></div>
       <div class="player-bet" id="ai-bet"></div>
@@ -356,26 +389,32 @@ body {
     <!-- Community / pot -->
     <div id="community-area">
       <div id="status-bar"></div>
-      <div id="community-cards"></div>
       <div id="pot-display">Pot: <span id="pot-amount">0</span></div>
+      <div id="community-cards"></div>
       <div id="pot-chips"></div>
       <div id="showdown-msg"></div>
     </div>
 
     <!-- Player area -->
     <div id="player-area">
-      <div class="player-bet" id="player-bet"></div>
-      <div class="player-stack">🪙 <span id="player-stack">1000</span></div>
       <div class="player-cards" id="player-cards"></div>
+      <div class="player-stack">🪙 <span id="player-stack">1000</span></div>
+      <div class="player-bet" id="player-bet"></div>
       <div class="player-name">You <span id="player-dealer-btn" class="dealer-btn" style="display:none">D</span></div>
       <div id="action-bar" class="hidden">
-        <button class="action-btn" id="btn-fold">Fold</button>
-        <button class="action-btn" id="btn-check" style="display:none">Check</button>
-        <button class="action-btn" id="btn-call">Call <span id="call-amount"></span></button>
-        <div id="raise-controls">
-          <button class="action-btn" id="btn-raise">Raise</button>
+        <div id="action-row-1">
+          <button class="action-btn" id="btn-fold">Fold</button>
+          <button class="action-btn" id="btn-check" style="display:none">Check</button>
+          <button class="action-btn" id="btn-call">Call <span id="call-amount"></span></button>
+        </div>
+        <div id="raise-row">
+          <button class="bet-preset" data-pct="0.5">½ Pot</button>
+          <button class="bet-preset" data-pct="0.75">¾ Pot</button>
+          <button class="bet-preset" data-pct="1.0">Pot</button>
+          <button class="bet-preset" data-allin="true">All In</button>
+          <input type="number" id="raise-input" min="0" max="1000" value="100">
           <input type="range" id="raise-slider" min="0" max="1000" value="100">
-          <span id="raise-amount-display">100</span>
+          <button class="action-btn" id="btn-raise">Raise <span id="raise-amount-display">100</span></button>
         </div>
       </div>
     </div>
@@ -428,6 +467,93 @@ const DEFAULT_CONFIG = {
   tracking: { historyLength: 50, minHandsForPattern: 10, emaAlpha: 0.1 },
   hints:    { defaultOn: false, level: 'basic' }
 };
+
+/* ═══════════════════════════════════════════════════════════════
+   LOGGER
+═══════════════════════════════════════════════════════════════ */
+const Logger = (() => {
+  const MAX_MEMORY  = 500;
+  const MAX_STORED  = 200;
+  const STORAGE_KEY = 'texas_holdem_logs';
+  const LEVELS      = { DEBUG:0, INFO:1, WARN:2, ERROR:3 };
+  let _minLevel     = LEVELS.DEBUG;
+  let _buffer       = []; // in-memory ring buffer
+
+  function _entry(level, category, message, data) {
+    return { ts: Date.now(), level, category, message,
+             data: data !== undefined ? JSON.parse(JSON.stringify(data)) : undefined };
+  }
+
+  function _push(entry) {
+    _buffer.push(entry);
+    if (_buffer.length > MAX_MEMORY) _buffer.shift();
+  }
+
+  function _persist(entry) {
+    if (entry.level < LEVELS.INFO) return; // only INFO+ to localStorage
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const logs = raw ? JSON.parse(raw) : [];
+      logs.unshift(entry);
+      if (logs.length > MAX_STORED) logs.length = MAX_STORED;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+    } catch { /* storage full — ignore */ }
+  }
+
+  function _log(level, category, message, data) {
+    if (LEVELS[level] < _minLevel) return;
+    const e = _entry(LEVELS[level], category, message, data);
+    _push(e);
+    _persist(e);
+    if (LEVELS[level] >= LEVELS.WARN)
+      console[level.toLowerCase()]?.(`[${category}] ${message}`, data ?? '');
+  }
+
+  function debug(cat, msg, data) { _log('DEBUG', cat, msg, data); }
+  function info (cat, msg, data) { _log('INFO',  cat, msg, data); }
+  function warn (cat, msg, data) { _log('WARN',  cat, msg, data); }
+  function error(cat, msg, data) { _log('ERROR', cat, msg, data); }
+
+  function getAll()     { return [..._buffer]; }
+  function getStored()  {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+    catch { return []; }
+  }
+  function clearStored(){ localStorage.removeItem(STORAGE_KEY); _buffer = []; }
+  function setLevel(l)  { _minLevel = LEVELS[l] ?? LEVELS.DEBUG; }
+
+  // Render logs into the test overlay
+  function show(filter) {
+    const el = document.getElementById('test-overlay');
+    if (!el) return;
+    const entries = [...getStored(), ..._buffer.filter(e => !getStored().find(s => s.ts === e.ts))];
+    const filtered = filter ? entries.filter(e => e.category === filter || e.level >= LEVELS[filter]) : entries;
+    const COLORS = { DEBUG:'#8b949e', INFO:'#58a6ff', WARN:'#d29922', ERROR:'#f85149' };
+    let html = `<h1>Game Logs ${filter ? `[${filter}]` : ''}</h1>
+      <div style="margin-bottom:12px;font-size:12px;color:#8b949e">
+        ${filtered.length} entries — <a href="?" style="color:#58a6ff">back to game</a> |
+        <a href="?logs=AI" style="color:#58a6ff">AI</a> |
+        <a href="?logs=GAME" style="color:#58a6ff">GAME</a> |
+        <a href="?logs=ERROR" style="color:#f85149">errors</a>
+      </div>`;
+    for (const e of filtered.slice(0, 300)) {
+      const t   = new Date(e.ts).toISOString().slice(11,23);
+      const lvl = Object.keys(LEVELS).find(k => LEVELS[k] === e.level) || '?';
+      const col = COLORS[lvl] || '#fff';
+      const dat = e.data !== undefined ? ` <span style="color:#8b949e">${JSON.stringify(e.data)}</span>` : '';
+      html += `<div style="margin:2px 0;font-size:12px">
+        <span style="color:#444">${t}</span>
+        <span style="color:${col};margin:0 6px">[${lvl}]</span>
+        <span style="color:#8b949e">[${e.category}]</span>
+        <span style="color:#e6edf3"> ${e.message}</span>${dat}
+      </div>`;
+    }
+    el.innerHTML = html;
+    el.classList.add('visible');
+  }
+
+  return { debug, info, warn, error, getAll, getStored, clearStored, setLevel, show };
+})();
 
 /* ═══════════════════════════════════════════════════════════════
    DECK MODULE
@@ -730,10 +856,18 @@ const AIEngine = (() => {
     const final  = oScore * w1 + pScore * w2 + bScore * w3;
 
     const { fold: foldT, raise: raiseT } = cfg.ai.thresholds;
-    if (final < foldT && gameState.toCall > 0) return { action: 'fold', amount: 0 };
-    if (final >= raiseT) return { action: 'raise', amount: _raiseAmount(gameState, final, cfg) };
-    if (gameState.toCall === 0) return { action: 'check', amount: 0 };
-    return { action: 'call', amount: gameState.toCall };
+    let decision;
+    if (final < foldT && gameState.toCall > 0) decision = { action: 'fold', amount: 0 };
+    else if (final >= raiseT) decision = { action: 'raise', amount: _raiseAmount(gameState, final, cfg) };
+    else if (gameState.toCall === 0) decision = { action: 'check', amount: 0 };
+    else decision = { action: 'call', amount: gameState.toCall };
+
+    Logger.info('AI', `Decision: ${decision.action}${decision.amount ? ' ' + decision.amount : ''}`, {
+      street: gameState.street, oScore: +oScore.toFixed(3), pScore: +pScore.toFixed(3),
+      bScore: +bScore.toFixed(3), final: +final.toFixed(3),
+      toCall: gameState.toCall, pot: gameState.pot, handsPlayed: profile.handsPlayed
+    });
+    return decision;
   }
 
   function updateProfile(profile, handResult) {
@@ -831,6 +965,8 @@ class GameEngine {
     s.player.bet = 0; s.ai.bet = 0;
     s.handOver = false; s.winner = null; s.winReason = null;
     s.allIn = false; s.street = 'preflop'; s.aiActions = [];
+    s.acted = new Set(); // tracks who has acted in the current betting round
+    s.lastAiAction = null; // cleared each hand, set when AI acts
 
     this._deck.shuffle();
 
@@ -849,6 +985,11 @@ class GameEngine {
     s.actionOn = sb; // dealer/SB acts first preflop
 
     s.phase = 'PREFLOP';
+    Logger.info('GAME', `Hand #${s.handNumber} started`, {
+      dealer: s.dealer, sb: s.smallBlind, bb: s.bigBlind,
+      playerStack: s.player.stack, aiStack: s.ai.stack,
+      playerCards: s.player.holeCards.map(c=>c.rank+c.suit[0]),
+    });
     this._emit();
     this._maybeAiAct();
   }
@@ -871,9 +1012,13 @@ class GameEngine {
     const s = this.state;
     const opp = who === 'player' ? 'ai' : 'player';
 
+    Logger.info('GAME', `${who} ${type}${amount ? ' ' + amount : ''}`,
+      { street: s.street, pot: s.pot, toCall: s.toCall, stack: s[who].stack });
+
     if (type === 'fold') {
       s.handOver = true; s.winner = opp;
       s.winReason = 'fold';
+      Logger.info('GAME', `Hand over — ${opp} wins by fold`, { pot: s.pot });
       if (who === 'player') {
         s.scores.ai++;
         this._recordHandResult({ playerWon: false, playerFoldedToRaise: s.toCall > 0, wentToShowdown: false });
@@ -894,7 +1039,6 @@ class GameEngine {
       s[who].stack -= callAmt; s[who].bet += callAmt; s.pot += callAmt;
       s.toCall = 0;
     } else if (type === 'raise') {
-      const totalBet = s[opp].bet + amount;
       const callFirst = Math.min(s.toCall, s[who].stack);
       s[who].stack -= callFirst; s[who].bet += callFirst; s.pot += callFirst;
       s.toCall = 0;
@@ -902,14 +1046,24 @@ class GameEngine {
       s[who].stack -= raiseExtra; s[who].bet += raiseExtra; s.pot += raiseExtra;
       s.toCall = s[who].bet - s[opp].bet;
       s.lastRaise = raiseExtra;
+      // a raise resets acted — opponent must act again
+      s.acted = new Set([who]);
     }
 
-    if (who === 'ai') s.aiActions.push({ action: type, amount, street: s.street });
+    // mark this player as having acted this round (fold handled above, raise resets above)
+    if (!s.acted) s.acted = new Set();
+    s.acted.add(who);
+
+    if (who === 'ai') {
+      s.aiActions.push({ action: type, amount, street: s.street });
+      s.lastAiAction = { action: type, amount, street: s.street };
+    }
 
     // check all-in
     if (s.player.stack === 0 || s.ai.stack === 0) {
       s.allIn = true;
       s.toCall = 0;
+      Logger.info('GAME', 'All-in detected — running out board');
     }
 
     this._advanceAction(who);
@@ -921,41 +1075,45 @@ class GameEngine {
 
     if (s.allIn) { this._runOutBoard(); return; }
 
-    // if opponent still needs to act (toCall > 0 or hasn't acted yet in round)
-    if (s.toCall > 0) {
+    // Opponent must act if: there's a bet to call OR they haven't acted yet this street
+    const oppHasActed = s.acted?.has(opp) ?? false;
+    if (s.toCall > 0 || !oppHasActed) {
+      Logger.debug('GAME', `Action to ${opp}`, { toCall: s.toCall, oppHasActed, street: s.street });
       s.actionOn = opp;
       this._emit();
       this._maybeAiAct();
       return;
     }
 
-    // both bets equal — street over
+    // Both players have acted and bets are equal — end the street
+    Logger.info('GAME', `Street complete: ${s.street}`, { pot: s.pot });
     this._nextStreet();
   }
 
   _nextStreet() {
     const s = this.state;
-    // reset bets for new street
+    // reset bets and acted-set for new street
     s.player.bet = 0; s.ai.bet = 0; s.toCall = 0; s.lastRaise = 0;
+    s.acted = new Set();
 
     if (s.phase === 'PREFLOP') {
-      const cards = [];
       this._deck.deal(1); // burn
-      cards.push(...this._deck.deal(3));
-      s.communityCards = cards;
+      s.communityCards = this._deck.deal(3);
       s.phase = 'FLOP'; s.street = 'flop';
-      // post-flop: non-dealer (BB) acts first
       s.actionOn = s.dealer === 'player' ? 'ai' : 'player';
+      Logger.info('GAME', 'Dealing flop', { cards: s.communityCards.map(c=>c.rank+c.suit[0]) });
     } else if (s.phase === 'FLOP') {
       this._deck.deal(1); // burn
       s.communityCards.push(this._deck.deal(1)[0]);
       s.phase = 'TURN'; s.street = 'turn';
       s.actionOn = s.dealer === 'player' ? 'ai' : 'player';
+      Logger.info('GAME', 'Dealing turn', { card: s.communityCards[3].rank+s.communityCards[3].suit[0] });
     } else if (s.phase === 'TURN') {
       this._deck.deal(1); // burn
       s.communityCards.push(this._deck.deal(1)[0]);
       s.phase = 'RIVER'; s.street = 'river';
       s.actionOn = s.dealer === 'player' ? 'ai' : 'player';
+      Logger.info('GAME', 'Dealing river', { card: s.communityCards[4].rank+s.communityCards[4].suit[0] });
     } else if (s.phase === 'RIVER') {
       this._doShowdown();
       return;
@@ -987,13 +1145,23 @@ class GameEngine {
     const aiHand     = HandEvaluator.evaluate([...s.ai.holeCards,     ...s.communityCards]);
     const cmp = HandEvaluator.compare(playerHand, aiHand);
 
+    Logger.info('GAME', 'Showdown', {
+      playerHand: playerHand.name, aiHand: aiHand.name,
+      playerCards: s.player.holeCards.map(c=>c.rank+c.suit[0]),
+      aiCards: s.ai.holeCards.map(c=>c.rank+c.suit[0]),
+      board: s.communityCards.map(c=>c.rank+c.suit[0]),
+      pot: s.pot
+    });
+
     if (cmp > 0) {
       s.winner = 'player'; s.winReason = 'showdown';
       s.player.stack += s.pot; s.scores.player++;
+      Logger.info('GAME', `Player wins showdown — ${playerHand.name}`, { pot: s.pot });
       this._recordHandResult({ playerWon: true, wentToShowdown: true, playerWonShowdown: true });
     } else if (cmp < 0) {
       s.winner = 'ai'; s.winReason = 'showdown';
       s.ai.stack += s.pot; s.scores.ai++;
+      Logger.info('GAME', `AI wins showdown — ${aiHand.name}`, { pot: s.pot });
       this._recordHandResult({ playerWon: false, wentToShowdown: true, playerWonShowdown: false });
     } else {
       // split — odd chip to dealer
@@ -1002,6 +1170,7 @@ class GameEngine {
       s.player.stack += half + (s.dealer === 'player' ? odd : 0);
       s.ai.stack     += half + (s.dealer === 'ai'     ? odd : 0);
       s.winner = 'split'; s.winReason = 'split';
+      Logger.info('GAME', 'Split pot', { pot: s.pot });
       this._recordHandResult({ playerWon: false, wentToShowdown: true, playerWonShowdown: false });
     }
     s.pot = 0;
@@ -1139,6 +1308,26 @@ const Renderer = (() => {
     if (playerBetEl) playerBetEl.textContent = player.bet > 0 ? `Bet: ${player.bet}` : '';
     if (aiBetEl)     aiBetEl.textContent     = ai.bet > 0 ? `Bet: ${ai.bet}` : '';
 
+    // AI action log
+    const aiLogEl = document.getElementById('ai-action-log');
+    if (aiLogEl) {
+      if (state.lastAiAction) {
+        const a = state.lastAiAction;
+        let txt = '';
+        if      (a.action === 'fold')  txt = 'CPU folds';
+        else if (a.action === 'check') txt = 'CPU checks';
+        else if (a.action === 'call')  txt = `CPU calls ${a.amount}`;
+        else if (a.action === 'raise') txt = `CPU raises ${a.amount}`;
+        aiLogEl.textContent = txt;
+        aiLogEl.style.color = '';
+      } else if (state.actionOn === 'ai' && !state.handOver) {
+        aiLogEl.textContent = 'CPU thinking...';
+        aiLogEl.style.color = 'var(--color-text-muted)';
+      } else {
+        aiLogEl.textContent = '';
+      }
+    }
+
     // Scores
     _setText('score-wins',   scores.player);
     _setText('score-losses', scores.ai);
@@ -1163,17 +1352,18 @@ const Renderer = (() => {
 
     _setCards('community-cards', communityCards || [], false);
 
-    // Status bar
+    // Status bar — shows street + pot summary
     const statusEl = document.getElementById('status-bar');
     if (statusEl) {
-      if (phase === 'PREFLOP')  statusEl.textContent = 'Pre-Flop';
-      else if (phase === 'FLOP')  statusEl.textContent = 'Flop';
-      else if (phase === 'TURN')  statusEl.textContent = 'Turn';
-      else if (phase === 'RIVER') statusEl.textContent = 'River';
-      else if (phase === 'ALL_IN_RUNOUT') statusEl.textContent = 'All-In — Running it out…';
-      else if (phase === 'SHOWDOWN' || phase === 'HAND_OVER') statusEl.textContent = 'Showdown';
-      else if (phase === 'GAME_OVER') statusEl.textContent = '';
-      else statusEl.textContent = '';
+      let streetTxt = '';
+      if      (phase === 'PREFLOP')       streetTxt = 'Pre-Flop';
+      else if (phase === 'FLOP')          streetTxt = 'Flop';
+      else if (phase === 'TURN')          streetTxt = 'Turn';
+      else if (phase === 'RIVER')         streetTxt = 'River';
+      else if (phase === 'ALL_IN_RUNOUT') streetTxt = 'All-In — Running it out…';
+      else if (phase === 'SHOWDOWN' || phase === 'HAND_OVER') streetTxt = 'Showdown';
+      const potTxt = pot > 0 ? `  ·  Pot: ${pot}  (You: ${player.bet} / CPU: ${ai.bet})` : '';
+      statusEl.textContent = streetTxt + potTxt;
     }
 
     // Action bar
@@ -1198,15 +1388,22 @@ const Renderer = (() => {
           btnCall.style.display  = 'inline-block';
           if (callAmtEl) callAmtEl.textContent = `(${Math.min(toCall, player.stack)})`;
         }
-        // raise slider
-        const minR = (state.lastRaise || bigBlind) * 2;
+        // raise slider + number input sync
+        const minR = state.lastRaise || bigBlind;
         const maxR = player.stack;
+        const defaultRaise = Math.min(Math.max(minR, Math.round(pot * 0.75)), maxR);
+        const raiseInput = document.getElementById('raise-input');
         if (slider) {
           slider.min   = minR;
           slider.max   = maxR;
-          slider.value = Math.min(Math.max(minR, Math.round(pot * 0.75)), maxR);
-          if (raiDisplay) raiDisplay.textContent = slider.value;
+          slider.value = defaultRaise;
         }
+        if (raiseInput) {
+          raiseInput.min   = minR;
+          raiseInput.max   = maxR;
+          raiseInput.value = defaultRaise;
+        }
+        if (raiDisplay) raiDisplay.textContent = defaultRaise;
       } else {
         actionBar.classList.add('hidden');
       }
@@ -1218,16 +1415,19 @@ const Renderer = (() => {
       if (phase === 'HAND_OVER' || phase === 'GAME_OVER') {
         let msg = '';
         if (winner === 'player')
-          msg = `You win! 🏆 ${winReason === 'fold' ? 'CPU folded' : playerHandResult?.name || ''}`;
+          msg = `You win! ${winReason === 'fold' ? 'CPU folded' : playerHandResult?.name || ''}`;
         else if (winner === 'ai')
           msg = `CPU wins ${winReason === 'fold' ? '(you folded)' : aiHandResult?.name || ''}`;
         else if (winner === 'split')
-          msg = `Split pot! ${playerHandResult?.name || ''}`;
-        sdMsg.textContent = msg;
+          msg = `Split pot — ${playerHandResult?.name || ''}`;
+        const nextBtn = phase === 'HAND_OVER'
+          ? `<br><button id="btn-next-hand" style="margin-top:10px;padding:7px 20px;background:#44aa44;border:none;border-radius:7px;color:#fff;font-size:13px;font-weight:600;cursor:pointer">Next Hand →</button>`
+          : '';
+        sdMsg.innerHTML = msg + nextBtn;
         sdMsg.classList.add('visible');
       } else {
         sdMsg.classList.remove('visible');
-        sdMsg.textContent = '';
+        sdMsg.innerHTML = '';
       }
     }
 
@@ -1248,8 +1448,8 @@ const Renderer = (() => {
     }
 
     // AI thinking indicator
-    if (state.actionOn === 'ai' && !state.handOver)
-      if (statusEl) statusEl.textContent += ' — CPU thinking…';
+    if (state.actionOn === 'ai' && !state.handOver && statusEl)
+      statusEl.textContent += ' — CPU thinking…';
   }
 
   function animateDeal() {
@@ -1930,20 +2130,57 @@ function runHandTests() {
     engine.playerAction('call', s?.toCall || 0);
   });
   document.getElementById('btn-raise').addEventListener('click', () => {
-    const amt = parseInt(document.getElementById('raise-slider').value, 10);
+    const amt = parseInt(document.getElementById('raise-input')?.value
+                      || document.getElementById('raise-slider').value, 10);
     engine.playerAction('raise', amt);
   });
+
+  // Slider → sync number input + display
   document.getElementById('raise-slider').addEventListener('input', e => {
-    document.getElementById('raise-amount-display').textContent = e.target.value;
+    const v = e.target.value;
+    document.getElementById('raise-amount-display').textContent = v;
+    const ri = document.getElementById('raise-input');
+    if (ri) ri.value = v;
   });
 
-  // After hand over — click table to continue
+  // Number input → sync slider + display
+  document.getElementById('raise-input').addEventListener('input', e => {
+    const v = e.target.value;
+    document.getElementById('raise-amount-display').textContent = v;
+    const sl = document.getElementById('raise-slider');
+    if (sl) sl.value = v;
+  });
+
+  // Bet preset buttons
+  document.querySelectorAll('.bet-preset').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const s = engine.getState();
+      if (!s) return;
+      let amt;
+      if (btn.dataset.allin) {
+        amt = s.player.stack;
+      } else {
+        const pct = parseFloat(btn.dataset.pct);
+        const minR = s.lastRaise || s.bigBlind || 50;
+        amt = Math.round(s.pot * pct);
+        amt = Math.max(minR, amt);
+        amt = Math.min(amt, s.player.stack);
+      }
+      const sl = document.getElementById('raise-slider');
+      const ri = document.getElementById('raise-input');
+      const rd = document.getElementById('raise-amount-display');
+      if (sl) sl.value = amt;
+      if (ri) ri.value = amt;
+      if (rd) rd.textContent = amt;
+    });
+  });
+
+  // After hand over — click the table felt (not buttons) to continue
   document.getElementById('table').addEventListener('click', (e) => {
+    if (e.target.closest('button, input, a, #action-bar, #new-game-overlay, #showdown-msg')) return;
     const s = engine.getState();
-    if (!s) return;
-    if (s.phase === 'HAND_OVER') {
-      engine.nextHand();
-    }
+    if (!s || s.phase !== 'HAND_OVER') return;
+    engine.nextHand();
   });
 
   // Hints toggle
@@ -1964,15 +2201,24 @@ function runHandTests() {
   engine.startGame();
   Renderer.render(engine.getState());
 
-  // Test runner via URL param
+  // After hand over — also handle Next Hand button inside showdown msg
+  document.getElementById('showdown-msg').addEventListener('click', (e) => {
+    if (e.target.id === 'btn-next-hand') {
+      const s = engine.getState();
+      if (s?.phase === 'HAND_OVER') engine.nextHand();
+    }
+  });
+
+  // URL param routing
   const params = new URLSearchParams(window.location.search);
   const testSuite = params.get('test');
+  const logFilter = params.get('logs');
+
   if (testSuite) {
-    if (testSuite === 'hand') {
-      runHandTests();
-    } else {
-      setTimeout(() => TestRunner.run(testSuite), 100);
-    }
+    if (testSuite === 'hand') runHandTests();
+    else setTimeout(() => TestRunner.run(testSuite), 100);
+  } else if (logFilter !== null) {
+    setTimeout(() => Logger.show(logFilter || undefined), 100);
   }
 })();
 </script>
