@@ -72,37 +72,50 @@ body {
 #game-field {
   position: absolute; inset: 0;
   display: flex; flex-direction: column;
-  justify-content: space-between; align-items: center;
-  padding: 14px 0 14px;
+  justify-content: space-between; align-items: stretch;
+  padding: 16px 0;
 }
 
-/* ── Player areas ─────────────────────────────────────────── */
+/* ── Player areas — horizontal rows ───────────────────────── */
 #ai-area {
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  display: flex; flex-direction: row;
+  align-items: center; justify-content: center;
+  gap: 16px; padding: 0 40px;
 }
 #player-area {
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  display: flex; flex-direction: row;
+  align-items: center; justify-content: center;
+  gap: 16px; padding: 0 40px;
 }
+
+/* Info panel sits beside the cards */
+.player-hud {
+  display: flex; flex-direction: column;
+  gap: 2px; min-width: 90px;
+}
+#ai-area .player-hud   { align-items: flex-start; }
+#player-area .player-hud { align-items: flex-start; }
+
 .player-name {
   font-family: var(--font-display);
-  font-size: 13px; font-weight: bold;
+  font-size: 12px; font-weight: bold;
   color: var(--color-text-muted);
-  text-transform: uppercase; letter-spacing: 1px;
+  text-transform: uppercase; letter-spacing: 0.8px;
 }
 .player-stack {
-  font-size: 18px; font-weight: bold;
+  font-size: 16px; font-weight: bold;
   color: var(--color-chip-primary);
 }
-.player-cards { display: flex; gap: 6px; min-height: 60px; align-items: center; }
+.player-cards { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
 .player-bet {
-  font-size: 13px; color: var(--color-chip-primary);
-  min-height: 18px;
+  font-size: 12px; color: var(--color-chip-primary);
+  min-height: 16px;
 }
 .dealer-btn {
-  display: inline-block; width: 22px; height: 22px;
+  display: inline-block; width: 20px; height: 20px;
   background: var(--color-chip-primary); color: var(--color-chip-text);
   border-radius: 50%; font-size: 10px; font-weight: bold;
-  text-align: center; line-height: 22px; margin-left: 6px;
+  text-align: center; line-height: 20px; margin-left: 5px;
   vertical-align: middle;
 }
 
@@ -110,9 +123,10 @@ body {
 #community-area {
   flex: 1;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 6px; position: relative;
+  gap: 4px; position: relative;
 }
-#community-cards { display: flex; gap: 6px; min-height: 0; align-items: center; }
+#community-cards { display: flex; gap: 6px; align-items: center; }
+#pot-display { font-size: 15px; font-weight: bold; color: var(--color-chip-primary); }
 #pot-display {
   font-size: 16px; color: var(--color-chip-primary);
   font-weight: bold;
@@ -223,10 +237,11 @@ body {
   text-align: center; margin-top: 2px; min-height: 15px;
 }
 
-/* ── Status / hint ────────────────────────────────────────── */
+/* ── Status strip (between table and action bar) ──────────── */
 #status-bar {
   font-size: 12px; color: var(--color-text-muted);
-  text-align: center; min-height: 18px; white-space: nowrap;
+  text-align: center; padding: 4px 0; white-space: nowrap;
+  min-height: 22px;
 }
 #hint-box {
   background: rgba(0,0,0,0.6);
@@ -383,30 +398,33 @@ body {
   <!-- Table -->
   <div id="table">
     <div id="game-field">
-      <!-- AI area -->
+      <!-- AI area: HUD on left, cards on right -->
       <div id="ai-area">
-        <div class="player-name">CPU <span id="ai-dealer-btn" class="dealer-btn" style="display:none">D</span></div>
-        <div id="ai-action-log"></div>
+        <div class="player-hud">
+          <div class="player-name">CPU <span id="ai-dealer-btn" class="dealer-btn" style="display:none">D</span></div>
+          <div class="player-stack">🪙 <span id="ai-stack">1000</span></div>
+          <div class="player-bet" id="ai-bet"></div>
+          <div id="ai-action-log"></div>
+        </div>
         <div class="player-cards" id="ai-cards"></div>
-        <div class="player-stack">🪙 <span id="ai-stack">1000</span></div>
-        <div class="player-bet" id="ai-bet"></div>
       </div>
 
       <!-- Community / pot -->
       <div id="community-area">
-        <div id="status-bar"></div>
         <div id="pot-display">Pot: <span id="pot-amount">0</span></div>
         <div id="community-cards"></div>
         <div id="pot-chips"></div>
         <div id="showdown-msg"></div>
       </div>
 
-      <!-- Player area -->
+      <!-- Player area: cards on left, HUD on right -->
       <div id="player-area">
         <div class="player-cards" id="player-cards"></div>
-        <div class="player-stack">🪙 <span id="player-stack">1000</span></div>
-        <div class="player-bet" id="player-bet"></div>
-        <div class="player-name">You <span id="player-dealer-btn" class="dealer-btn" style="display:none">D</span></div>
+        <div class="player-hud">
+          <div class="player-name">You <span id="player-dealer-btn" class="dealer-btn" style="display:none">D</span></div>
+          <div class="player-stack">🪙 <span id="player-stack">1000</span></div>
+          <div class="player-bet" id="player-bet"></div>
+        </div>
       </div>
     </div><!-- end #game-field -->
 
@@ -417,6 +435,9 @@ body {
       <button id="btn-new-game">Deal Cards</button>
     </div>
   </div><!-- end #table -->
+
+  <!-- Status strip between table and action bar -->
+  <div id="status-bar"></div>
 
   <!-- Action bar (outside table so it never overlaps) -->
   <div id="action-bar" class="hidden">
